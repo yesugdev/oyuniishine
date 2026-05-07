@@ -51,14 +51,25 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
 
 // Connect DB & start
 const PORT = process.env.PORT || 5000;
+
+if (!process.env.MONGODB_URI) {
+  console.error('❌ MONGODB_URI environment variable is not set!');
+  process.exit(1);
+}
+if (!process.env.JWT_SECRET) {
+  console.error('❌ JWT_SECRET environment variable is not set!');
+  process.exit(1);
+}
+
+console.log('🔄 Connecting to MongoDB...');
 mongoose
-  .connect(process.env.MONGODB_URI!)
+  .connect(process.env.MONGODB_URI)
   .then(() => {
-    console.log('MongoDB connected');
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    console.log('✅ MongoDB connected');
+    app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
   })
   .catch((err) => {
-    console.error('DB connection failed:', err.message);
+    console.error('❌ DB connection failed:', err.message);
     process.exit(1);
   });
 
