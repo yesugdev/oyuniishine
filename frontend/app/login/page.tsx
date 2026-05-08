@@ -86,11 +86,6 @@ function LoginForm() {
         </Link>
       </p>
 
-      <div className="mt-6 p-4 rounded-2xl" style={{ background: '#f8fafc' }}>
-        <p className="text-xs font-bold mb-2" style={{ color: '#94a3b8' }}>🧪 Demo нэвтрэх мэдээлэл:</p>
-        <p className="text-xs" style={{ color: '#94a3b8' }}>Багш: teacher@demo.mn / demo1234</p>
-        <p className="text-xs" style={{ color: '#94a3b8' }}>Эцэг эх: parent@demo.mn / demo1234</p>
-      </div>
     </div>
   )
 }
