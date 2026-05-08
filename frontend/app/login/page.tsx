@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
 import FloatingParticles from '@/components/ui/FloatingParticles'
 
@@ -14,12 +14,18 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const { login, user } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirect')
 
   useEffect(() => {
     if (user) {
-      router.replace(user.role === 'teacher' || user.role === 'admin' ? '/dashboard/teacher' : '/showcase')
+      if (redirectTo) {
+        router.replace(redirectTo)
+      } else {
+        router.replace(user.role === 'teacher' || user.role === 'admin' ? '/dashboard/teacher' : '/showcase')
+      }
     }
-  }, [user, router])
+  }, [user, router, redirectTo])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

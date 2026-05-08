@@ -14,7 +14,7 @@ import {
   reactToStudent,
   getTeacherStudents,
 } from '../controllers/studentController';
-import { protect, authorize } from '../middleware/auth';
+import { protect, optionalProtect, authorize } from '../middleware/auth';
 
 const upload = multer({
   dest: path.join(__dirname, '../../uploads/'),
@@ -32,7 +32,7 @@ const router = Router();
 
 router.get('/', getStudents);
 router.get('/my', protect, authorize('teacher'), getTeacherStudents);
-router.get('/:id', protect, getStudentById);
+router.get('/:id', optionalProtect, getStudentById);
 
 router.post('/', protect, authorize('teacher', 'admin'), upload.single('profilePhoto'), createStudent);
 router.put('/:id', protect, authorize('teacher', 'admin'), upload.single('profilePhoto'), updateStudent);
