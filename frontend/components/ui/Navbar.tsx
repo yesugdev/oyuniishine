@@ -92,21 +92,14 @@ export default function Navbar() {
                 </button>
               </>
             ) : (
-              <>
-                <Link href="/login" style={{
-                  fontSize: 14, fontWeight: 700, color: '#374151', textDecoration: 'none',
-                }}>
-                  Нэвтрэх
-                </Link>
-                <Link href="/register" style={{
-                  padding: '8px 20px', borderRadius: 12, fontSize: 14, fontWeight: 700,
-                  textDecoration: 'none', color: 'white',
-                  background: 'linear-gradient(135deg, #f97316, #ea580c)',
-                  boxShadow: '0 4px 12px rgba(249,115,22,0.3)',
-                }}>
-                  Бүртгүүлэх
-                </Link>
-              </>
+              <Link href="/login" style={{
+                padding: '8px 20px', borderRadius: 12, fontSize: 14, fontWeight: 700,
+                textDecoration: 'none', color: 'white',
+                background: 'linear-gradient(135deg, #f97316, #ea580c)',
+                boxShadow: '0 4px 12px rgba(249,115,22,0.3)',
+              }}>
+                Нэвтрэх
+              </Link>
             )}
           </div>
 
@@ -156,23 +149,14 @@ export default function Navbar() {
                   Гарах
                 </button>
               ) : (
-                <>
-                  <Link href="/login" onClick={() => setMenuOpen(false)} style={{
-                    flex: 1, padding: '10px', borderRadius: 12, fontWeight: 700,
-                    fontSize: 14, border: '2px solid #e2e8f0', background: 'white',
-                    color: '#374151', textDecoration: 'none', textAlign: 'center',
-                  }}>
-                    Нэвтрэх
-                  </Link>
-                  <Link href="/register" onClick={() => setMenuOpen(false)} style={{
-                    flex: 1, padding: '10px', borderRadius: 12, fontWeight: 700,
-                    fontSize: 14, border: 'none', color: 'white', textAlign: 'center',
-                    background: 'linear-gradient(135deg, #f97316, #ea580c)',
-                    textDecoration: 'none',
-                  }}>
-                    Бүртгүүлэх
-                  </Link>
-                </>
+                <Link href="/login" onClick={() => setMenuOpen(false)} style={{
+                  flex: 1, padding: '10px', borderRadius: 12, fontWeight: 700,
+                  fontSize: 14, border: 'none', color: 'white', textAlign: 'center',
+                  background: 'linear-gradient(135deg, #f97316, #ea580c)',
+                  textDecoration: 'none',
+                }}>
+                  Нэвтрэх
+                </Link>
               )}
             </div>
           </div>
