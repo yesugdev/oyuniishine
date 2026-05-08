@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
 import { studentsApi } from '@/lib/api'
 import StudentCard from '@/components/student/StudentCard'
+import QuickPhotoUpload from '@/components/teacher/QuickPhotoUpload'
 import type { Student } from '@/types'
 
 
@@ -219,6 +220,7 @@ export default function TeacherDashboard() {
   const [showModal, setShowModal] = useState(false)
   const [photoTarget, setPhotoTarget] = useState<{ id: string; name: string } | null>(null)
   const [search, setSearch] = useState('')
+  const [activeTab, setActiveTab] = useState<'students' | 'quick'>('students')
 
   useEffect(() => {
     if (loading) return
@@ -289,72 +291,108 @@ export default function TeacherDashboard() {
           <StatsCard icon="👁" value={totalViews} label="Нийт үзэлт" color="from-lavender-400 to-lavender-600" />
         </div>
 
-        {/* Search */}
-        <div className="relative mb-8 max-w-md">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
-          <input type="text" placeholder="Сурагч хайх..."
-            value={search} onChange={(e) => setSearch(e.target.value)}
-            className="input-field pl-12" />
+        {/* Tab switcher */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 28, borderBottom: '2px solid #f1f5f9', paddingBottom: 0 }}>
+          {([
+            { key: 'students', icon: '📋', label: 'Сурагчид' },
+            { key: 'quick', icon: '⚡', label: 'Хурдан зураг' },
+          ] as const).map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              style={{
+                padding: '10px 20px',
+                border: 'none',
+                borderBottom: activeTab === tab.key ? '3px solid #f97316' : '3px solid transparent',
+                background: 'none',
+                cursor: 'pointer',
+                fontWeight: 800,
+                fontSize: 14,
+                color: activeTab === tab.key ? '#ea580c' : '#64748b',
+                marginBottom: -2,
+                transition: 'all 0.2s',
+                borderRadius: '8px 8px 0 0',
+              }}
+            >
+              {tab.icon} {tab.label}
+            </button>
+          ))}
         </div>
 
-        {/* Students grid */}
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="card p-6 animate-pulse">
-                <div className="h-40 bg-slate-200 rounded-2xl mb-4" />
-                <div className="h-4 bg-slate-200 rounded w-3/4 mb-2" />
-                <div className="h-3 bg-slate-100 rounded" />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((student, i) => (
-              <motion.div
-                key={student._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.07 }}
-                className="relative group"
-              >
-                <StudentCard student={student} />
-                {/* Action overlay */}
-                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={() => {
-                      if (confirm(`"${student.fullName}"-г устгах уу?`)) {
-                        deleteMutation.mutate(student._id)
-                      }
-                    }}
-                    className="w-8 h-8 rounded-xl shadow-md flex items-center justify-center text-sm"
-                    style={{ background: '#ef4444', color: 'white' }}
-                  >
-                    🗑
-                  </button>
-                </div>
-                {/* Public/private badge */}
-                <div className="absolute top-14 right-3">
-                  <span className={`badge text-xs ${student.isPublic ? 'bg-mint-100 text-mint-700' : 'bg-slate-100 text-slate-500'}`}>
-                    {student.isPublic ? '🌍 Нийтэд' : '🔒 Хаалттай'}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
+        {activeTab === 'students' && (
+          <>
+            {/* Search */}
+            <div className="relative mb-8 max-w-md">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+              <input type="text" placeholder="Сурагч хайх..."
+                value={search} onChange={(e) => setSearch(e.target.value)}
+                className="input-field pl-12" />
+            </div>
 
-            {/* Add card */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setShowModal(true)}
-              className="card p-8 flex flex-col items-center justify-center gap-4 border-2 border-dashed border-slate-200 hover:border-warm-300 hover:bg-warm-50 transition-all cursor-pointer min-h-[280px]"
-            >
-              <div className="w-16 h-16 rounded-3xl bg-warm-100 flex items-center justify-center text-3xl">
-                ➕
+            {/* Students grid */}
+            {isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="card p-6 animate-pulse">
+                    <div className="h-40 bg-slate-200 rounded-2xl mb-4" />
+                    <div className="h-4 bg-slate-200 rounded w-3/4 mb-2" />
+                    <div className="h-3 bg-slate-100 rounded" />
+                  </div>
+                ))}
               </div>
-              <p className="font-bold text-slate-500">Шинэ сурагч нэмэх</p>
-            </motion.button>
-          </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filtered.map((student, i) => (
+                  <motion.div
+                    key={student._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.07 }}
+                    className="relative group"
+                  >
+                    <StudentCard student={student} />
+                    {/* Action overlay */}
+                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={() => {
+                          if (confirm(`"${student.fullName}"-г устгах уу?`)) {
+                            deleteMutation.mutate(student._id)
+                          }
+                        }}
+                        className="w-8 h-8 rounded-xl shadow-md flex items-center justify-center text-sm"
+                        style={{ background: '#ef4444', color: 'white' }}
+                      >
+                        🗑
+                      </button>
+                    </div>
+                    {/* Public/private badge */}
+                    <div className="absolute top-14 right-3">
+                      <span className={`badge text-xs ${student.isPublic ? 'bg-mint-100 text-mint-700' : 'bg-slate-100 text-slate-500'}`}>
+                        {student.isPublic ? '🌍 Нийтэд' : '🔒 Хаалттай'}
+                      </span>
+                    </div>
+                  </motion.div>
+                ))}
+
+                {/* Add card */}
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowModal(true)}
+                  className="card p-8 flex flex-col items-center justify-center gap-4 border-2 border-dashed border-slate-200 hover:border-warm-300 hover:bg-warm-50 transition-all cursor-pointer min-h-[280px]"
+                >
+                  <div className="w-16 h-16 rounded-3xl bg-warm-100 flex items-center justify-center text-3xl">
+                    ➕
+                  </div>
+                  <p className="font-bold text-slate-500">Шинэ сурагч нэмэх</p>
+                </motion.button>
+              </div>
+            )}
+          </>
+        )}
+
+        {activeTab === 'quick' && (
+          <QuickPhotoUpload students={allStudents} />
         )}
       </div>
     </div>
