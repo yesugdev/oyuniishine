@@ -10,6 +10,7 @@ import { useAuth } from '@/lib/auth'
 import { formatDate, ACHIEVEMENT_ICONS, REACTION_ICONS, getInitials } from '@/lib/utils'
 import FloatingParticles from '@/components/ui/FloatingParticles'
 import Badge from '@/components/ui/Badge'
+import ProfilePhotoEditor from '@/components/student/ProfilePhotoEditor'
 import type { Student } from '@/types'
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -458,7 +459,10 @@ function VideoCard({ video, canEdit, onDelete }: {
 
 // ─── Profile Hero ──────────────────────────────────────────────────────────────
 
-function ProfileHero({ student, canEdit, onEdit }: { student: Student; canEdit: boolean; onEdit: () => void }) {
+function ProfileHero({ student, canEdit, onEdit, onEditPhoto }: {
+  student: Student; canEdit: boolean; onEdit: () => void; onEditPhoto: () => void
+}) {
+  const [avatarHover, setAvatarHover] = useState(false)
   return (
     <div className="relative min-h-[50vh] overflow-hidden flex items-end"
       style={{ background: 'linear-gradient(135deg, #f97316, #8b5cf6)' }}>
@@ -470,13 +474,24 @@ function ProfileHero({ student, canEdit, onEdit }: { student: Student; canEdit: 
           transition={{ type: 'spring', stiffness: 100 }}
           className="flex flex-col sm:flex-row items-start sm:items-end gap-6">
           {/* Avatar */}
-          <div className="relative">
-            <div className="w-32 h-32 rounded-3xl border-4 shadow-2xl overflow-hidden flex items-center justify-center"
-              style={{ borderColor: 'rgba(255,255,255,0.5)', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)' }}>
+          <div className="relative" style={{ flexShrink: 0 }}>
+            <div
+              className="w-32 h-32 rounded-3xl border-4 shadow-2xl overflow-hidden flex items-center justify-center"
+              style={{ borderColor: 'rgba(255,255,255,0.5)', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', cursor: canEdit ? 'pointer' : 'default', position: 'relative' }}
+              onMouseEnter={() => setAvatarHover(true)}
+              onMouseLeave={() => setAvatarHover(false)}
+              onClick={canEdit ? onEditPhoto : undefined}
+            >
               {student.profilePhoto ? (
-                <Image src={student.profilePhoto} alt={student.fullName} fill className="object-cover" />
+                <Image src={student.profilePhoto} alt={student.fullName} fill className="object-cover" style={{ transition: 'filter 0.2s', filter: canEdit && avatarHover ? 'brightness(0.55)' : 'none' }} />
               ) : (
                 <span className="text-4xl font-black text-white">{getInitials(student.fullName)}</span>
+              )}
+              {canEdit && avatarHover && (
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, zIndex: 2 }}>
+                  <span style={{ fontSize: 26 }}>📷</span>
+                  <span style={{ fontSize: 10, fontWeight: 800, color: 'white', textAlign: 'center', lineHeight: 1.3 }}>Зураг засах</span>
+                </div>
               )}
             </div>
             <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full border-2 border-white flex items-center justify-center text-sm">⭐</div>
@@ -512,7 +527,7 @@ function ProfileHero({ student, canEdit, onEdit }: { student: Student; canEdit: 
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 
-type Modal = 'editProfile' | 'addAchievement' | 'addTimeline' | 'uploadPhoto' | 'addVideo' | null
+type Modal = 'editProfile' | 'addAchievement' | 'addTimeline' | 'uploadPhoto' | 'addVideo' | 'editPhoto' | null
 type TabKey = 'profile' | 'gallery' | 'achievements' | 'timeline' | 'videos'
 
 export default function StudentDetailPage() {
@@ -629,6 +644,18 @@ export default function StudentDetailPage() {
           <AddVideoModal onClose={() => setModal(null)}
             onSave={async (data) => { await addVideoMutation.mutateAsync(data) }} />
         )}
+        {modal === 'editPhoto' && (
+          <ProfilePhotoEditor
+            currentPhoto={s.profilePhoto}
+            studentName={s.fullName}
+            onClose={() => setModal(null)}
+            onSave={async (fd) => {
+              await studentsApi.update(id, fd)
+              qc.invalidateQueries({ queryKey: ['student', id] })
+              setModal(null)
+            }}
+          />
+        )}
       </AnimatePresence>
 
       {/* Photo lightbox */}
@@ -664,7 +691,7 @@ export default function StudentDetailPage() {
         ← Буцах
       </button>
 
-      <ProfileHero student={s} canEdit={canEdit} onEdit={() => setModal('editProfile')} />
+      <ProfileHero student={s} canEdit={canEdit} onEdit={() => setModal('editProfile')} onEditPhoto={() => setModal('editPhoto')} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Intro + reactions */}
