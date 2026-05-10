@@ -75,8 +75,6 @@ export default function StudentCard({ student, queryKey = ['students'] }: {
     <motion.div
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
-      whileHover={{ y: -8 }}
-      transition={{ type: 'spring', stiffness: 280, damping: 22 }}
       style={{ position: 'relative', borderRadius: 24 }}
     >
       <Link href={`/students/${student._id}`} style={{ textDecoration: 'none', display: 'block' }}>
