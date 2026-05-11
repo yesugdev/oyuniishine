@@ -26,7 +26,7 @@ export default function FeaturedStudents() {
       parentMessage: '', childMessage: '',
       photos: [], videos: [], achievements: [
         { _id: 'a1', title: 'Шатрын тэмцээн 1-р байр', date: '2025-10-01', type: 'award' }
-      ], timeline: [], aiSummary: '', aiStrengths: ['Математик', 'Логик'],
+      ], timeline: [], grades: [], aiSummary: '', aiStrengths: ['Математик', 'Логик'],
       teacher: { _id: 't1', name: 'Б.Отгонбаяр' }, reactions: [], viewCount: 124, createdAt: '', updatedAt: ''
     },
     {
@@ -40,7 +40,7 @@ export default function FeaturedStudents() {
       parentMessage: '', childMessage: '',
       photos: [], videos: [], achievements: [
         { _id: 'a2', title: 'Урлагийн тэмцээн 2-р байр', date: '2025-09-15', type: 'art' }
-      ], timeline: [], aiSummary: '', aiStrengths: ['Урлаг', 'Бүтээлч'],
+      ], timeline: [], grades: [], aiSummary: '', aiStrengths: ['Урлаг', 'Бүтээлч'],
       teacher: { _id: 't2', name: 'Х.Сарантуяа' }, reactions: [], viewCount: 98, createdAt: '', updatedAt: ''
     },
     {
@@ -54,7 +54,7 @@ export default function FeaturedStudents() {
       parentMessage: '', childMessage: '',
       photos: [], videos: [], achievements: [
         { _id: 'a3', title: 'Хөлбөмбөгийн аймгийн аварга', date: '2025-11-20', type: 'sports' }
-      ], timeline: [], aiSummary: '', aiStrengths: ['Спорт', 'Удирдагч'],
+      ], timeline: [], grades: [], aiSummary: '', aiStrengths: ['Спорт', 'Удирдагч'],
       teacher: { _id: 't1', name: 'Б.Отгонбаяр' }, reactions: [], viewCount: 156, createdAt: '', updatedAt: ''
     },
   ]

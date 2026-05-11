@@ -11,6 +11,7 @@ import { formatDate, ACHIEVEMENT_ICONS, REACTION_ICONS, getInitials } from '@/li
 import FloatingParticles from '@/components/ui/FloatingParticles'
 import Badge from '@/components/ui/Badge'
 import ProfilePhotoEditor from '@/components/student/ProfilePhotoEditor'
+import GradesTab from '@/components/student/GradesTab'
 import type { Student } from '@/types'
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -528,7 +529,7 @@ function ProfileHero({ student, canEdit, onEdit, onEditPhoto }: {
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 
 type Modal = 'editProfile' | 'addAchievement' | 'addTimeline' | 'uploadPhoto' | 'addVideo' | 'editPhoto' | null
-type TabKey = 'profile' | 'gallery' | 'achievements' | 'timeline' | 'videos'
+type TabKey = 'profile' | 'gallery' | 'achievements' | 'timeline' | 'videos' | 'grades'
 
 export default function StudentDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -718,6 +719,7 @@ export default function StudentDetailPage() {
             { key: 'gallery', label: `📸 Галерей ${(s.photos?.length ?? 0) > 0 ? `(${s.photos.length})` : ''}` },
             { key: 'videos', label: `🎬 Бичлэг ${(s.videos?.length ?? 0) > 0 ? `(${s.videos.length})` : ''}` },
             { key: 'timeline', label: `📅 Хэлхээ ${(s.timeline?.length ?? 0) > 0 ? `(${s.timeline.length})` : ''}` },
+            { key: 'grades', label: `📊 Дүн${(s.grades?.length ?? 0) > 0 ? ` (${s.grades.length})` : ''}` },
           ].map((tab) => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key as typeof activeTab)}
               className="px-5 py-2.5 rounded-2xl font-bold text-sm whitespace-nowrap transition-all"
@@ -928,6 +930,19 @@ export default function StudentDetailPage() {
                   )}
                 </div>
               )}
+            </motion.div>
+          )}
+
+          {/* ── Grades tab ── */}
+          {activeTab === 'grades' && (
+            <motion.div key="grades" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <Section title="Хичээлийн дүн" emoji="📊">
+                <GradesTab
+                  grades={s.grades ?? []}
+                  canEdit={canEdit}
+                  studentId={id}
+                />
+              </Section>
             </motion.div>
           )}
 

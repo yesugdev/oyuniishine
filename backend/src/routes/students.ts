@@ -13,6 +13,9 @@ import {
   deleteVideo,
   reactToStudent,
   getTeacherStudents,
+  addGrade,
+  updateGrade,
+  deleteGrade,
 } from '../controllers/studentController';
 import { protect, optionalProtect, authorize } from '../middleware/auth';
 
@@ -45,5 +48,9 @@ router.post('/:id/videos', protect, authorize('teacher', 'admin'), addVideo);
 router.delete('/:id/videos/:videoId', protect, authorize('teacher', 'admin'), deleteVideo);
 
 router.post('/:id/react', protect, reactToStudent);
+
+router.post('/:id/grades',            protect, authorize('teacher','admin'), addGrade);
+router.put('/:id/grades/:gradeId',    protect, authorize('teacher','admin'), updateGrade);
+router.delete('/:id/grades/:gradeId', protect, authorize('teacher','admin'), deleteGrade);
 
 export default router;

@@ -1,3 +1,12 @@
+export interface Grade {
+  _id: string
+  subject: string
+  score: number
+  term: '1-р улирал' | '2-р улирал' | '3-р улирал' | '4-р улирал' | 'Жилийн эцэст'
+  comment?: string
+  date: string
+}
+
 export interface Student {
   _id: string
   fullName: string
@@ -25,6 +34,7 @@ export interface Student {
   videos: Video[]
   achievements: Achievement[]
   timeline: TimelineEvent[]
+  grades: Grade[]
   aiSummary?: string
   aiStrengths: string[]
   teacher: { _id: string; name: string; avatar?: string }

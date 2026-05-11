@@ -54,4 +54,7 @@ export const studentsApi = {
   react: (id: string, type: string) => api.post(`/students/${id}/react`, { type }),
   addVideo: (id: string, data: { url: string; title?: string }) => api.post(`/students/${id}/videos`, data),
   deleteVideo: (id: string, videoId: string) => api.delete(`/students/${id}/videos/${videoId}`),
+  addGrade:    (id: string, data: { subject: string; score: number; term: string; comment?: string }) => api.post(`/students/${id}/grades`, data),
+  updateGrade: (id: string, gradeId: string, data: Partial<{ subject: string; score: number; term: string; comment: string }>) => api.put(`/students/${id}/grades/${gradeId}`, data),
+  deleteGrade: (id: string, gradeId: string) => api.delete(`/students/${id}/grades/${gradeId}`),
 }

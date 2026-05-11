@@ -8,7 +8,7 @@ import fs from 'fs';
 const isValidId = (id: string | string[]) => mongoose.Types.ObjectId.isValid(String(id));
 
 // Fields that must never be overwritten via update body
-const PROTECTED = new Set(['_id', '__v', 'teacher', 'createdAt', 'updatedAt', 'photos', 'reactions', 'viewCount']);
+const PROTECTED = new Set(['_id', '__v', 'teacher', 'createdAt', 'updatedAt', 'photos', 'reactions', 'viewCount', 'grades']);
 
 function sanitizeBody(body: Record<string, unknown>) {
   const clean: Record<string, unknown> = {};
@@ -257,4 +257,63 @@ export const getTeacherStudents = async (req: AuthRequest, res: Response) => {
     console.error(err);
     return res.status(500).json({ message: 'Server error' });
   }
+};
+
+export const addGrade = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!isValidId(req.params.id)) return res.status(404).json({ message: 'Student not found' });
+    const student = await Student.findById(req.params.id);
+    if (!student) return res.status(404).json({ message: 'Student not found' });
+
+    const isOwner = student.teacher.toString() === req.user!._id.toString();
+    if (!isOwner && req.user!.role !== 'admin') return res.status(403).json({ message: 'Forbidden' });
+
+    const { subject, score, term, comment } = req.body;
+    if (!subject || score === undefined || !term) return res.status(400).json({ message: 'subject, score, term required' });
+
+    const grade = { subject: subject.trim(), score: Number(score), term, comment: comment?.trim(), date: new Date() };
+    student.grades.push(grade as any);
+    await student.save();
+    return res.status(201).json(student.grades[student.grades.length - 1]);
+  } catch (err) { console.error(err); return res.status(500).json({ message: 'Server error' }); }
+};
+
+export const updateGrade = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id, gradeId } = req.params;
+    if (!isValidId(id)) return res.status(404).json({ message: 'Student not found' });
+    const student = await Student.findById(id);
+    if (!student) return res.status(404).json({ message: 'Student not found' });
+
+    const isOwner = student.teacher.toString() === req.user!._id.toString();
+    if (!isOwner && req.user!.role !== 'admin') return res.status(403).json({ message: 'Forbidden' });
+
+    const grade = student.grades.find((g) => (g as any)._id.toString() === gradeId);
+    if (!grade) return res.status(404).json({ message: 'Grade not found' });
+
+    const { subject, score, term, comment } = req.body;
+    if (subject !== undefined) grade.subject = subject.trim();
+    if (score  !== undefined) grade.score   = Number(score);
+    if (term   !== undefined) grade.term    = term;
+    if (comment !== undefined) grade.comment = comment?.trim();
+
+    await student.save();
+    return res.json(grade);
+  } catch (err) { console.error(err); return res.status(500).json({ message: 'Server error' }); }
+};
+
+export const deleteGrade = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id, gradeId } = req.params;
+    if (!isValidId(id)) return res.status(404).json({ message: 'Student not found' });
+    const student = await Student.findById(id);
+    if (!student) return res.status(404).json({ message: 'Student not found' });
+
+    const isOwner = student.teacher.toString() === req.user!._id.toString();
+    if (!isOwner && req.user!.role !== 'admin') return res.status(403).json({ message: 'Forbidden' });
+
+    student.grades = student.grades.filter((g) => (g as any)._id.toString() !== gradeId) as any;
+    await student.save();
+    return res.json({ message: 'Grade deleted' });
+  } catch (err) { console.error(err); return res.status(500).json({ message: 'Server error' }); }
 };

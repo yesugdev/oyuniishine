@@ -34,6 +34,14 @@ interface IReaction {
   type: 'heart' | 'star' | 'smile' | 'clap';
 }
 
+interface IGrade {
+  subject: string;
+  score: number;
+  term: '1-р улирал' | '2-р улирал' | '3-р улирал' | '4-р улирал' | 'Жилийн эцэст';
+  comment?: string;
+  date: Date;
+}
+
 export interface IStudent extends Document {
   // Basic
   fullName: string;
@@ -73,6 +81,8 @@ export interface IStudent extends Document {
   // AI-generated
   aiSummary?: string;
   aiStrengths: string[];
+
+  grades: IGrade[];
 
   // Relations
   teacher: mongoose.Types.ObjectId;
@@ -159,6 +169,16 @@ const StudentSchema = new Schema<IStudent>(
 
     aiSummary: String,
     aiStrengths: [String],
+
+    grades: [
+      {
+        subject:  { type: String, required: true, trim: true },
+        score:    { type: Number, required: true, min: 0, max: 100 },
+        term:     { type: String, required: true, enum: ['1-р улирал','2-р улирал','3-р улирал','4-р улирал','Жилийн эцэст'] },
+        comment:  String,
+        date:     { type: Date, default: Date.now },
+      },
+    ],
 
     teacher: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     parentUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
